@@ -41,6 +41,14 @@ contract NFTAuction is Initializable, ReentrancyGuard, UUPSUpgradeable {
 
     mapping(address => AggregatorV3Interface) public dataFeeds;
 
+    // allow owner to set data feeds for testing / config
+    function setDataFeed(
+        address tokenAddress,
+        address aggregator
+    ) external onlyOwner {
+        dataFeeds[tokenAddress] = AggregatorV3Interface(aggregator);
+    }
+
     // 拍卖创建事件
     event AuctionCreated(
         address indexed seller,

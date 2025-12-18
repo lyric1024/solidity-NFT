@@ -1,13 +1,18 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-export default buildModule("NFTAuctionModule", (m) => {
-    // 首次运行：部署代理 + 实现
-    // 后续运行：自动升级（因为名字相同）
-    const nftAuction = m.contract("NFTAuction");
-    // 如果是 V2，可选：调用 initializeV2
-    // 注意：只有升级后才需要这行！首次部署会失败（因为 reinitializer(2) 不能在 version=1 时调）
-    // 所以建议手动调用，或通过条件判断（Ignition 目前不支持条件调用）
-    // m.call(nftAuction, "initializeV2", [deployer]);
-    
-    return { nftAuction };
+export default buildModule("NFTAuctionModuleV1", (m) => {
+    // 部署实现合约（implementation）
+    const impl = m.contract("NFTAuction", [], { id: "NFTAuctionImpl" });
+
+    // 部署 ERC1967 proxy，构造函数参数：implementation address + init calldata
+    // 我们这里不传 init calldata（使用 "0x"），因此需要在部署后通过代理地址调用 `initialize`。
+    const proxy = m.contract("MyERC1967Proxy", [impl, "0x"], { id: "NFTAuctionProxy" });
+
+    // 在代理上调用 initialize()（NFTAuction.initialize() 无需参数）
+    // 使用实现合约的 ABI 在代理地址上执行初始化调用
+    const nftAuctionAtProxy = m.contractAt("NFTAuction", proxy, { id: "NFTAuctionAtProxy" });
+    m.call(nftAuctionAtProxy, "initialize", []);
+
+    // 导出代理地址作为 nftAuction 引用
+    return { nftAuction: proxy };
 });

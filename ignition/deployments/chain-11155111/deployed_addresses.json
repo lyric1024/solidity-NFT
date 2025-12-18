@@ -1,0 +1,6 @@
+{
+  "NFTAuctionModule#NFTAuction": "0xf27021DA5660AeE284C0A80676475F5A10E69c6a",
+  "NFTAuctionModuleV1#NFTAuctionImpl": "0x5d4738B5E4EeE7592C72D1D27E1df18AE447da72",
+  "NFTAuctionModuleV1#NFTAuctionProxy": "0x24e520b4fDd6d9c814cfbe7affC088ADE666603D",
+  "NFTAuctionModuleV1#NFTAuctionAtProxy": "0x24e520b4fDd6d9c814cfbe7affC088ADE666603D"
+}
